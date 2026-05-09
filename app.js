@@ -31,7 +31,7 @@ const PRODUCTS = [
   { id:27, name:"Lancashire Tasty",      cat:"british",      emoji:"🏴", img:"https://images.unsplash.com/photo-1452195100486-9cc7a74b8691?w=480&h=360&fit=crop&auto=format&q=80", origin:"Lancashire, England",           tagline:"El sabor del norte inglés en su máxima expresión",desc:"Queso desmenuzable y húmedo del norte de Inglaterra. Textura única y sabor ligeramente ácido y mantecoso.",                         price:10.60, weight:"300g",   intensity:"Medio-Fuerte",milk:"Vaca",   maturity:"6-12 meses",  pairing:"Black pudding, pickles o cerveza Stout inglesa.",              badge:"british" },
   { id:28, name:"Chutney de Mango Artesanal",cat:"accompaniment",emoji:"🫙",img:"https://images.unsplash.com/photo-1541544537965-0558c25f7bdc?w=480&h=360&fit=crop&auto=format&q=80", origin:"The Cheese Shop, Nottingham",  tagline:"Maridaje perfecto para quesos duros",           desc:"Chutney elaborado artesanalmente con mangos de primera calidad, jengibre y especias. Equilibrio perfecto entre dulce, ácido y especiado.",price:5.50,weight:"300g",intensity:"—",milk:"Vegano",maturity:"—",pairing:"Cheddar madurado, Cornish Yarg o queso de cabra." },
   { id:29, name:"Crackers de Avena Artesanales",cat:"accompaniment",emoji:"🍘",img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=480&h=360&fit=crop&auto=format&q=80", origin:"Escocia",                     tagline:"La base perfecta para cualquier queso",         desc:"Galletas de avena escocesas elaboradas con ingredientes de primera. El acompañamiento ideal para realzar el sabor de cualquier queso.",price:4.20,weight:"200g",intensity:"—",milk:"Sin lácteos",maturity:"—",pairing:"Perfectas con cualquier queso de nuestra selección." },
-  { id:30, name:"Ale de Nottingham – The Trip to Jerusalem",cat:"accompaniment",emoji:"🍺",img:"https://images.unsplash.com/photo-1532634733-490b54b0cef4?w=480&h=360&fit=crop&auto=format&q=80", origin:"Nottingham, England",         tagline:"La cerveza más antigua de Nottingham",          desc:"Ale británica de la pub más antigua de Nottingham (1189). Amargor equilibrado con notas maltosas y de caramelo.",                  price:3.80, weight:"500ml",  intensity:"—",           milk:"Sin lácteos",maturity:"—",pairing:"Stilton, Cheddar Extra Madurado o Lancashire." },
+  { id:30, name:"Ale de Nottingham - The Trip to Jerusalem",cat:"accompaniment",emoji:"🍺",img:"https://images.unsplash.com/photo-1532634733-490b54b0cef4?w=480&h=360&fit=crop&auto=format&q=80", origin:"Nottingham, England",         tagline:"La cerveza más antigua de Nottingham",          desc:"Ale británica de la pub más antigua de Nottingham (1189). Amargor equilibrado con notas maltosas y de caramelo.",                  price:3.80, weight:"500ml",  intensity:"—",           milk:"Sin lácteos",maturity:"—",pairing:"Stilton, Cheddar Extra Madurado o Lancashire." },
 ];
 
 // ═══════════════════════════════════════════
@@ -162,8 +162,8 @@ function toggleTheme() {
 
 function toggleHighContrast() {
   highContrast = !highContrast;
-  document.documentElement.classList.toggle('high-contrast', highContrast);
-  const btn = document.getElementById('contrast-btn');
+  document.documentElement.classList.toggle('high- contrast', highContrast);
+  const btn = document.getElementById('contrast- btn');
   if (btn) {
     btn.setAttribute('aria-pressed', String(highContrast));
     btn.classList.toggle('active', highContrast);
@@ -553,7 +553,7 @@ function cycleOrderStatus(orderId) {
   order.status = cycle[order.status] || 'pending';
   renderDashboard();
   var st = STATUS_LABELS[order.status];
-  toast('Pedido #' + orderId + ' → ' + st.icon + ' ' + st.text);
+  toast('Pedido #' + orderId + ' > ' + st.icon + ' ' + st.text);
 }
 
 function addLiveOrder(orderId, cartSnapshot, grandTotal) {
@@ -589,7 +589,7 @@ function addLiveOrder(orderId, cartSnapshot, grandTotal) {
   if (tc) {
     var el = document.createElement('div');
     el.className = 'toast success';
-    el.innerHTML = '✅ Pedido <strong>#' + orderId + '</strong> recibido · <a onclick="scrollToDashboard()" class="toast-action" style="cursor:pointer;color:var(--gold-light);text-decoration:underline;">Ver Dashboard →</a>';
+    el.innerHTML = '✅ Pedido <strong>#' + orderId + '</strong> recibido · <a onclick="scrollToDashboard()" class="toast-action" style="cursor:pointer;color:var(--gold-light);text-decoration:underline;">Ver Dashboard ></a>';
     el.setAttribute('role', 'alert');
     tc.appendChild(el);
     setTimeout(function() { el.classList.add('out'); setTimeout(function() { el.remove(); }, 350); }, 5000);
@@ -826,7 +826,7 @@ function renderPagination() {
   if (totalPages <= 1) { container.innerHTML = ''; return; }
 
   let html = '<button class="page-btn" onclick="goToPage(' + (currentPage - 1) + ')" ' +
-    (currentPage === 1 ? 'disabled' : '') + ' aria-label="Página anterior">‹</button>';
+    (currentPage === 1 ? 'disabled' : '') + ' aria-label="Página anterior"><</button>';
 
   for (let i = 1; i <= totalPages; i++) {
     html += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" ' +
@@ -835,7 +835,7 @@ function renderPagination() {
   }
 
   html += '<button class="page-btn" onclick="goToPage(' + (currentPage + 1) + ')" ' +
-    (currentPage === totalPages ? 'disabled' : '') + ' aria-label="Página siguiente">›</button>';
+    (currentPage === totalPages ? 'disabled' : '') + ' aria-label="Página siguiente">></button>';
 
   container.innerHTML = html;
 }
@@ -1058,7 +1058,7 @@ function updateCartUI() {
         '<span class="cart-subtotal-value">£' + grand + '</span>' +
       '</div>' +
       '<div class="cart-note">✅ Envío gratis en pedidos +£40</div>' +
-      '<button class="cart-checkout-btn" onclick="handleCheckout()" aria-label="Proceder al pago">Proceder al Pago →</button>';
+      '<button class="cart-checkout-btn" onclick="handleCheckout()" aria-label="Proceder al pago">Proceder al Pago ></button>';
   }
 }
 
@@ -1134,7 +1134,7 @@ function handleCheckout() {
         '</div>' +
         '<div class="checkout-actions">' +
           '<button class="checkout-confirm-btn" id="checkout-confirm-btn" onclick="confirmOrder(\'' + orderId + '\',' + grand + ')">✅ Confirmar Pedido — £' + grand + '</button>' +
-          '<button class="checkout-back-btn" onclick="closeCheckout()">← Volver al carrito</button>' +
+          '<button class="checkout-back-btn" onclick="closeCheckout()">< Volver al carrito</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -1179,7 +1179,7 @@ function confirmOrder(orderId, grand) {
               '<p>📞 Te llamaremos para confirmar</p>' +
             '</div>' +
             '<button onclick="closeCheckout();scrollToDashboard();" ' +
-              'style="margin-top:20px;padding:14px 32px;background:var(--gold);color:var(--navy);border:none;border-radius:6px;cursor:pointer;font-family:Josefin Sans,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Ver Dashboard →</button>' +
+              'style="margin-top:20px;padding:14px 32px;background:var(--gold);color:var(--navy);border:none;border-radius:6px;cursor:pointer;font-family:Josefin Sans,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Ver Dashboard ></button>' +
           '</div>';
       }
     }
@@ -1299,7 +1299,7 @@ function handleNewsletter(e) {
   input.value = '';
   toast('¡Suscripción confirmada!', 'success');
   setTimeout(() => {
-    if (btn) { btn.textContent = 'Suscribirse →'; btn.style.background = ''; }
+    if (btn) { btn.textContent = 'Suscribirse >'; btn.style.background = ''; }
   }, 3000);
 }
 
