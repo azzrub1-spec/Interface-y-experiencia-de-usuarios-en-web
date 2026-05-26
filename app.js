@@ -438,9 +438,45 @@ function closeOnboarding() {
 // ═══════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════
-var liveOrders = RECENT_ORDERS.slice();
-var liveOrderCount = 142;
 var newOrdersCount = 0;
+
+// Restore from localStorage or use defaults
+function loadOrdersFromStorage() {
+  try {
+    const saved = localStorage.getItem('liveOrders');
+    const savedCount = localStorage.getItem('liveOrderCount');
+    if (saved) {
+      const orders = JSON.parse(saved).map(o => ({
+        ...o,
+        timestamp: o.timestamp ? new Date(o.timestamp) : null
+      }));
+      return {
+        orders: orders,
+        count: savedCount ? parseInt(savedCount, 10) : 142
+      };
+    }
+    return { orders: RECENT_ORDERS.slice(), count: 142 };
+  } catch(e) {
+    return { orders: RECENT_ORDERS.slice(), count: 142 };
+  }
+}
+
+const _stored = loadOrdersFromStorage();
+var liveOrders = _stored.orders;
+var liveOrderCount = _stored.count;
+
+function saveOrdersToStorage() {
+  try {
+    // Timestamps se pierden en JSON, los convertimos a string
+    const toSave = liveOrders.map(o => ({
+      ...o,
+      timestamp: o.timestamp ? o.timestamp.toString() : null,
+      isNew: false  // al recargar ya no son "nuevos"
+    }));
+    localStorage.setItem('liveOrders', JSON.stringify(toSave));
+    localStorage.setItem('liveOrderCount', String(liveOrderCount));
+  } catch(e) {}
+}
 
 var STATUS_LABELS = {
   pending:   { icon: '⏳', text: 'Pendiente',  cls: 'badge-pending' },
@@ -450,12 +486,14 @@ var STATUS_LABELS = {
 
 function formatOrderTime(timestamp) {
   if (!timestamp) return '';
+  var ts = (timestamp instanceof Date) ? timestamp : new Date(timestamp);
+  if (isNaN(ts.getTime())) return '';
   var now = new Date();
-  var diff = Math.floor((now - timestamp) / 1000);
+  var diff = Math.floor((now - ts) / 1000);
   if (diff < 60)    return 'Hace unos segundos';
   if (diff < 3600)  return 'Hace ' + Math.floor(diff / 60) + ' min';
   if (diff < 86400) return 'Hace ' + Math.floor(diff / 3600) + 'h';
-  return timestamp.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  return ts.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
 }
 
 function renderDashboard() {
@@ -551,6 +589,7 @@ function cycleOrderStatus(orderId) {
   if (!order) return;
   var cycle = { pending: 'transit', transit: 'delivered', delivered: 'pending' };
   order.status = cycle[order.status] || 'pending';
+  saveOrdersToStorage();  
   renderDashboard();
   var st = STATUS_LABELS[order.status];
   toast('Pedido #' + orderId + ' > ' + st.icon + ' ' + st.text);
@@ -576,6 +615,7 @@ function addLiveOrder(orderId, cartSnapshot, grandTotal) {
   if (liveOrders.length > 10) liveOrders.pop();
   liveOrderCount++;
   newOrdersCount++;
+  saveOrdersToStorage(); 
 
   var statEl = document.getElementById('stat-orders');
   if (statEl) {
@@ -607,6 +647,7 @@ function updateOrderStatus(orderId, newStatus) {
   if (!order || order.status === 'delivered') return;
   order.status = newStatus;
   if (order.timestamp) order.date = formatOrderTime(order.timestamp);
+  saveOrdersToStorage();
   renderDashboard();
   var labels = { transit: '🚚 Tu pedido está en camino', delivered: '✅ Tu pedido ha sido entregado' };
   if (labels[newStatus]) toast(labels[newStatus] + ' — #' + orderId, newStatus === 'delivered' ? 'success' : '');
