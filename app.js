@@ -673,7 +673,7 @@ setInterval(function() { if (liveOrders.length) renderDashboard(); }, 30000);
 
 
 // Actualiza el contador del botón favoritos
-function updateWishlistCounter() {
+/* function updateWishlistCounter() {
     const counterSpan = document.getElementById('wishlist-count');
     if (counterSpan) counterSpan.textContent = wishlist.size;
 }
@@ -692,7 +692,7 @@ function showWishlist() {
     renderProducts();
     renderPagination();
     document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
-}
+} */
 
 // ═══════════════════════════════════════════
 // CATALOG — FILTER & RENDER
