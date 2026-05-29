@@ -400,12 +400,23 @@ function init() {
       }
       if (ob && !ob.classList.contains('hidden')) closeOnboarding();
     }
-    if (e.key === 'Tab') {
-      const pm = document.getElementById('product-modal');
-      if (pm && pm.classList.contains('open')) {
+  if (e.key === 'Tab') {
+    const pm = document.getElementById('product-modal');
+    if (pm && pm.classList.contains('open')) {
         trapFocus(e, document.getElementById('modal-inner'));
-      }
+        return;
     }
+    const ob = document.getElementById('onboarding');
+    if (ob && !ob.classList.contains('hidden')) {
+        trapFocus(e, ob.querySelector('.onboarding-modal'));
+        return;
+    }
+    const cart = document.getElementById('cart-sidebar');
+    if (cart && cart.classList.contains('open')) {
+        trapFocus(e, cart);
+        return;
+    }
+}
   });
 }
 
@@ -660,10 +671,33 @@ function scrollToDashboard() {
 
 setInterval(function() { if (liveOrders.length) renderDashboard(); }, 30000);
 
+
+// Actualiza el contador del botón favoritos
+/* function updateWishlistCounter() {
+    const counterSpan = document.getElementById('wishlist-count');
+    if (counterSpan) counterSpan.textContent = wishlist.size;
+}
+
+// Muestra solo los productos favoritos
+function showWishlist() {
+    if (wishlist.size === 0) {
+        toast("No tienes favoritos aún. Haz clic en ❤️ en cualquier producto.", "info");
+        return;
+    }
+    // Filtra productos que están en wishlist
+    const filteredWishlist = PRODUCTS.filter(p => wishlist.has(p.id));
+    filteredProducts = filteredWishlist;
+    currentCat = 'wishlist'; // valor especial
+    currentPage = 1;
+    renderProducts();
+    renderPagination();
+    document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+} */
+
 // ═══════════════════════════════════════════
 // CATALOG — FILTER & RENDER
 // ═══════════════════════════════════════════
-function applyFilters() {
+/* function applyFilters() {
   searchQuery = (document.getElementById('search-input') || {}).value || '';
   sortBy = (document.getElementById('sort-select') || {}).value || 'default';
 
@@ -689,6 +723,33 @@ function applyFilters() {
   renderProducts();
   updateCounts();
   renderPagination();
+} */
+
+function applyFilters() {
+    // Si estamos en modo wishlist, no aplicar filtros normales
+    if (currentCat === 'wishlist') {
+        filteredProducts = PRODUCTS.filter(p => wishlist.has(p.id));
+    } else {
+        searchQuery = (document.getElementById('search-input') || {}).value || '';
+        sortBy = (document.getElementById('sort-select') || {}).value || 'default';
+        filteredProducts = PRODUCTS.filter(p => {
+            const matchCat = currentCat === 'all' || p.cat === currentCat;
+            const matchPrice = p.price <= maxPrice;
+            const q = searchQuery.toLowerCase().trim();
+            const matchSearch = !q || p.name.toLowerCase().includes(q) || p.origin.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
+            return matchCat && matchPrice && matchSearch;
+        });
+        // Ordenamiento (igual que antes)
+        if (sortBy === 'price-asc') filteredProducts.sort((a, b) => a.price - b.price);
+        else if (sortBy === 'price-desc') filteredProducts.sort((a, b) => b.price - a.price);
+        else if (sortBy === 'name-asc') filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+        else if (sortBy === 'name-desc') filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
+        else if (sortBy === 'popular') filteredProducts.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
+    }
+    currentPage = 1;
+    renderProducts();
+    updateCounts();
+    renderPagination();
 }
 
 function setCatFilter(cat, btn) {
@@ -833,7 +894,8 @@ function renderProducts() {
       '</div>' +
       '<div class="product-info">' +
         '<div class="product-cat">' + catLabel + '</div>' +
-        '<div class="product-name">' + p.name + '</div>' +
+       // '<div class="product-name">' + p.name + '</div>' +
+        '<h3 class="product-name">' + p.name + '</h3>' +
         '<div class="product-origin">📍 ' + p.origin + '</div>' +
         '<div class="product-desc">' + p.desc + '</div>' +
         '<div class="product-meta">' +
@@ -1168,6 +1230,10 @@ function handleCheckout() {
           '<div class="checkout-row"><span>Envío</span><span class="' + (shipping === 0 ? 'checkout-free' : '') + '">' + (shipping === 0 ? '✅ Gratis' : '£4.99') + '</span></div>' +
           '<div class="checkout-row checkout-grand"><span><strong>Total</strong></span><span><strong>£' + grand + '</strong></span></div>' +
         '</div>' +
+        '<div class="form-field" style="margin-bottom: 16px;">' +
+          '<label for="checkout-address" class="form-label">Dirección de entrega *</label>' +
+          '<input type="text" id="checkout-address" class="form-input" placeholder="Tu dirección en Nottingham" required>' +
+        '</div>' +
         '<div class="checkout-info">' +
           '<p>📍 Entrega en Nottingham y alrededores</p>' +
           '<p>🕐 Plazo estimado: 24 horas hábiles</p>' +
@@ -1197,6 +1263,14 @@ function closeCheckout() {
 }
 
 function confirmOrder(orderId, grand) {
+  const addressInput = document.getElementById('checkout-address');
+if (!addressInput || !addressInput.value.trim()) {
+    toast('Por favor, introduce tu dirección de entrega.', 'error');
+    const btn = document.getElementById('checkout-confirm-btn');
+    if (btn) btn.disabled = false;
+    return;
+}
+  
   const btn = document.getElementById('checkout-confirm-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Procesando...'; }
 
@@ -1342,6 +1416,18 @@ function handleNewsletter(e) {
   setTimeout(() => {
     if (btn) { btn.textContent = 'Suscribirse >'; btn.style.background = ''; }
   }, 3000);
+}
+
+function toggleFiltersMobile() {
+    const aside = document.getElementById('filters-aside');
+    const btn = document.getElementById('toggle-filters-mobile');
+    if (aside.classList.contains('open')) {
+        aside.classList.remove('open');
+        btn.textContent = '🔍 Mostrar filtros';
+    } else {
+        aside.classList.add('open');
+        btn.textContent = '✖ Cerrar filtros';
+    }
 }
 
 // ═══════════════════════════════════════════
