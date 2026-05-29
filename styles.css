@@ -7,8 +7,11 @@
   --navy-mid:    #1a3050;
   --cream:       #f5efe3;
   --parchment:   #e0cfa8;
-  --gold:        #c9a84c;
-  --gold-light:  #e8c97e;
+  --gold: #b8860b;        /* dorado más oscuro (ratio ~4.6:1 sobre blanco) */
+  --gold-light: #d4a83a;
+  --text-primary: #1a1208;  /* casi negro, legible sobre fondos claros */
+  --text-secondary: #3e2e1f; /* marrón oscuro suficiente */
+  --cream: #f5efe3;
   --rust:        #8b3a2a;
   --red:         #b22234;
   --warm-white:  #fdf8f0;
@@ -48,9 +51,10 @@
 }
 
 [data-theme="dark"] {
-  --bg-primary:    #13161c;      /* slightly warmer dark */
-  --bg-secondary:  #1c2128;
-  --bg-card:       #22272e;      /* clearly distinct from bg */
+  --gold: #e6b422;         /* dorado brillante sobre fondo oscuro */
+  --text-primary: #f0e8d8;  /* claro */
+  --text-secondary: #c8b89a;
+  --bg-card: #22272e;
   --text-primary:  #f0e8d8;      /* warm cream white — high contrast */
   --text-secondary:#c8b89a;      /* warm tan — readable */
   --border-color:  #3a4455;      /* visible border */
@@ -744,6 +748,12 @@ nav {
   flex-wrap: wrap;
 }
 .btn-gold {
+
+   .cart-checkout-btn,
+   .modal-add-btn,
+   .product-add-btn {
+     color: #0d1b2a; /* azul marino oscuro, ratio >7:1 sobre dorado */
+   }
   background: var(--gold);
   color: var(--navy);
   font-family: 'Josefin Sans', sans-serif;
